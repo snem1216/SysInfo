@@ -35,9 +35,14 @@ namespace SysInfo
             ScreenWrite("RAM: " + GetRAM());
             WriteDiskInfo();
             WriteNetworkInfo();
-            this.Left = SystemParameters.PrimaryScreenWidth - this.Width;
-            this.Top = 0;
-            
+            try
+            {
+                tb.Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#00ff000");
+            }
+            catch
+            {
+                Console.WriteLine("Failed to load text color from config");
+            }
         }
 
         public void ScreenWrite(string x, int tabs = 0)
@@ -54,17 +59,15 @@ namespace SysInfo
         }
         private void WriteDiskInfo()
         {
-            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            DriveInfo[] Drives = DriveInfo.GetDrives();
 
-            foreach (DriveInfo d in allDrives)
+            foreach (DriveInfo drive in Drives)
             {
-                if (d.IsReady == true)
+                if (drive.IsReady == true)
                 {
-                    ScreenWrite("Drive " + d.Name.Replace(":\\","") + " " + (d.VolumeLabel != "" ? "(" + d.VolumeLabel + ")" : "") + " - " + d.DriveType);
-                    //ScreenWrite("Drive type: " + , 1);
-                    ScreenWrite("Volume label: " + d.VolumeLabel,1);
-                    ScreenWrite("File System: " + d.DriveFormat,1);
-                    ScreenWrite("Free: " + ToGB(d.TotalFreeSpace) + "/" + ToGB(d.TotalSize), 1);
+                    ScreenWrite("Drive " + drive.Name.Replace(":\\","") + " " + (drive.VolumeLabel != "" ? "(" + drive.VolumeLabel + ")" : "") + " - " + drive.DriveType);
+                    ScreenWrite("File System: " + drive.DriveFormat,1);
+                    ScreenWrite("Free: " + ToGB(drive.TotalFreeSpace) + "/" + ToGB(drive.TotalSize), 1);
                 }
             }
         }
@@ -79,18 +82,11 @@ namespace SysInfo
 
         private string GetRAM()
         {
-            long ram;
+            string totalRAM;
             var ramsize = (from x in new ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem").Get().Cast<ManagementObject>()
                         select x.GetPropertyValue("TotalPhysicalMemory")).FirstOrDefault();
-            //ramsize = ((int)ramsize / (Math.Pow(1024,3)));
-            string rs = ramsize.ToString();
-            //string rs = "1234";
-            //string r = "";
-
-            ram = (Int64.Parse(rs));
-            //int ram = Int32.Parse(ramsize.ToString());
-            ramsize = String.Format("{0:.##} GB", (ram / Math.Pow(1024, 3)));
-            return ramsize != null ? ramsize.ToString() : "Unknown";
+            totalRAM = String.Format("{0:.##} GB", ((Int64.Parse(ramsize.ToString())) / Math.Pow(1024, 3)));
+            return totalRAM != null ? totalRAM.ToString() : "Unknown";
         }
 
         private void WriteHostName()
@@ -126,6 +122,24 @@ namespace SysInfo
             ScreenWrite("OS: " + GetOsName());
             ScreenWrite("OS Build: " + BuildVersion);
             ScreenWrite("Service Pack: " + (os.ServicePack != "" ? os.ServicePack : "N/A"));
+        }
+
+        // Make this display in the bottom right-hand corner
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Left = SystemParameters.WorkArea.Right - (this.Width + 5);
+            this.Top = SystemParameters.WorkArea.Bottom - (this.Height + 5);
+        }
+
+        // Disable minimization
+        // Will still minimize when "Show Desktop" is triggered, but will pop back up as soon as another Window is restored/launched.
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if(this.WindowState == WindowState.Minimized)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            
         }
     }
 }
