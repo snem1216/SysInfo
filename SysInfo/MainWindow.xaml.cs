@@ -34,7 +34,7 @@ namespace SysInfo
             WriteOSInfo();
             ScreenWrite("RAM: " + GetRAM());
             WriteDiskInfo();
-            //WriteNetworkInfo();
+            WriteNetworkInfo();
             this.Left = SystemParameters.PrimaryScreenWidth - this.Width;
             this.Top = 0;
             
