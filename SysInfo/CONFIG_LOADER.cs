@@ -4,27 +4,48 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace SysInfo
 {
     class CONFIG_LOADER
     {
-        public Dictionary<string, string> LoadSettings()
+        // Default configuration values
+        private Dictionary<string, string> DefaultConfig = new Dictionary<string, string>
         {
-            string ConfigFilePath = "sysinfo-config.csv";
-            Dictionary<string, string> ReturnDict = new Dictionary<string, string>();
-            if(File.Exists(ConfigFilePath))
-            using (StreamReader reader = new StreamReader(ConfigFilePath))
+            { "TextColor","#fff" },
+            { "TextSize","12" },
+            { "TextFont","Consolas" },
+            { "Shadow","True" },
+            { "VerticalLocation","Bottom" },
+            { "HorizontalLocation","Right" }
+        };
+        public Dictionary<string, string> GetConf()
+        {
+            string ConfigFilePath = "sysinfo-settings.conf";
+
+            if (File.Exists(ConfigFilePath))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                Dictionary<string, string> ReturnDict = new Dictionary<string, string>();
+                using (StreamReader reader = new StreamReader(ConfigFilePath))
                 {
-                    string[] splitLine = line.Split(',');
-                    ReturnDict.Add(splitLine[0], splitLine[1]);
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        string[] splitLine = line.Split('=');
+                        ReturnDict.Add(splitLine[0], splitLine[1]);
+                    }
                 }
+                return ReturnDict;
             }
-            return ReturnDict;
+            else
+            {
+                // Use default configuration 
+                return DefaultConfig;
+            }
         }
-        
+
+            
     }
+        
 }

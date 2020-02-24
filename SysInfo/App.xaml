@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:SysInfo"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="LightSkyBlue" />
+            <Style.Triggers>
+                <Trigger Property="Focusable" Value="False">
+                    <Setter Property="Background" Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>
