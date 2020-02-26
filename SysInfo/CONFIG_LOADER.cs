@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace SysInfo
@@ -14,9 +13,9 @@ namespace SysInfo
         private static Dictionary<string, string> DefaultConfig = new Dictionary<string, string>
         {
             { "TextColor","#fff" },
-            { "TextSize", "12" },
+            { "TextSize", "14" },
             { "TextFont", "Consolas" },
-            { "VerticalLocation", "Top" },
+            { "VerticalLocation", "Bottom" },
             { "HorizontalLocation", "Right" },
             { "AlwaysOnTop", "False" },
             { "ShowUsername", "True" },
@@ -25,8 +24,16 @@ namespace SysInfo
             { "ShowRAM", "True" },
             { "DriveInfo", "Verbose" },
             { "NetInfo", "Compact" }
-
         };
+        private static void WriteDefaultConfFile(string path)
+        {
+            string contents = "";
+            foreach(string key in DefaultConfig.Keys)
+            {
+                contents += key + "=" + DefaultConfig[key] + "\n";
+            }
+            System.IO.File.WriteAllText(path, contents);
+        }
         public static Dictionary<string, string> GetConf(string ConfigFilePath = "sysinfo-settings.conf")
         {
             // Use the default configuration, and modify it as settings are passed in
@@ -59,6 +66,14 @@ namespace SysInfo
             {
                 // Use default configuration
                 Console.WriteLine("Could not find " + ConfigFilePath);
+                try
+                {
+                    WriteDefaultConfFile(ConfigFilePath);
+                }
+                catch
+                {
+                    Console.WriteLine("Failed to write default config");
+                }
                 return DefaultConfig;
             }
         }
