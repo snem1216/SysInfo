@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Management;
 using System.IO;
+using SysInfo_Lib;
 
 namespace SysInfo
 {
@@ -25,111 +26,81 @@ namespace SysInfo
     /// </summary>
     public partial class MainWindow : Window
     {
+        private InfoGrabber siig = new InfoGrabber();
+        Dictionary<string, string> config = CONFIG_LOADER.GetConf();
+        //Dictionary<string, string> config
         public MainWindow()
         {
             InitializeComponent();
             //ScreenWrite(Environment.WorkingSet.ToString());
-            WriteUserInfo();
-            WriteHostName();
-            WriteOSInfo();
-            ScreenWrite("RAM: " + GetRAM());
-            WriteDiskInfo();
-            WriteNetworkInfo();
+            tb.Text = WriteScreen();
+            ConfigAppearance();
+        }
+
+        // Apply aesthetic settings to the window
+        private void ConfigAppearance()
+        {
+            // Load Foreground Color
             try
             {
-                tb.Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#00ff000");
+                tb.Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString(config["TextColor"]);
             }
             catch
             {
                 Console.WriteLine("Failed to load text color from config");
             }
-        }
-
-        public void ScreenWrite(string x, int tabs = 0)
-        {
-            tb.Text += String.Concat(Enumerable.Repeat("\t", tabs)) + x + "\n";
-        }
-        private static string ToGB(long s)
-        {
-            return String.Format("{0:0.00}", (s / Math.Pow(1024, 3))) + " GB";
-        }
-        private void WriteUserInfo()
-        {
-            ScreenWrite("Username: " + Environment.UserDomainName + "\\" + Environment.UserName);
-        }
-        private void WriteDiskInfo()
-        {
-            DriveInfo[] Drives = DriveInfo.GetDrives();
-
-            foreach (DriveInfo drive in Drives)
+            tb.FontFamily = (FontFamily)new FontFamilyConverter().ConvertFromString(config["TextFont"]);
+            tb.FontSize = Convert.ToDouble(config["TextSize"]);
+            this.Topmost = (config["AlwaysOnTop"] == "True");
+            int hpadding = 5;
+            int vpadding = 5;
+            switch (config["HorizontalLocation"])
             {
-                if (drive.IsReady == true)
-                {
-                    ScreenWrite("Drive " + drive.Name.Replace(":\\","") + " " + (drive.VolumeLabel != "" ? "(" + drive.VolumeLabel + ")" : "") + " - " + drive.DriveType);
-                    ScreenWrite("File System: " + drive.DriveFormat,1);
-                    ScreenWrite("Free: " + ToGB(drive.TotalFreeSpace) + "/" + ToGB(drive.TotalSize), 1);
-                }
+                case "Left":
+                    this.Left = hpadding;
+                    break;
+                // Not sure why anyone would pick this, but just in case...
+                case "Center":
+                    this.Left = (SystemParameters.WorkArea.Right - this.Width) / 2;
+                    break;
+                // Default setting is "Right"
+                default:
+                    this.Left = SystemParameters.WorkArea.Right - (this.Width + hpadding);
+                    break;
             }
-        }
-
-        private string GetOsName()
-        {
-            var name = (from x in new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
-                        select x.GetPropertyValue("Caption")).FirstOrDefault();
-
-            return name != null ? name.ToString() : "Unknown";
-        }
-
-        private string GetRAM()
-        {
-            string totalRAM;
-            var ramsize = (from x in new ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem").Get().Cast<ManagementObject>()
-                        select x.GetPropertyValue("TotalPhysicalMemory")).FirstOrDefault();
-            totalRAM = String.Format("{0:.##} GB", ((Int64.Parse(ramsize.ToString())) / Math.Pow(1024, 3)));
-            return totalRAM != null ? totalRAM.ToString() : "Unknown";
-        }
-
-        private void WriteHostName()
-        {
-            string hostName = Dns.GetHostName();
-            ScreenWrite("Hostname: " + hostName);
-        }
-        private void WriteNetworkInfo()
-        {
-            // Network Info
-            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            switch (config["VerticalLocation"])
             {
-                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                {
-                    ScreenWrite(ni.Name);
-                    ScreenWrite("Physical: " + ni.GetPhysicalAddress(), 1);
-                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                        {
-                            ScreenWrite("IP: " + ip.Address.ToString(), 1);
-                            ScreenWrite("Subnet Mask: " + ip.IPv4Mask, 1);
-                        }
-                    }
-                }
+                case "Top":
+                    this.Top = vpadding;
+                    break;
+                case "Center":
+                    this.Top = (SystemParameters.WorkArea.Bottom - this.Height) / 2;
+                    break;
+                // Default setting is "Bottom"
+                default:
+                    this.Top = SystemParameters.WorkArea.Bottom - (this.Height + vpadding);
+                    break;
             }
+            
         }
-        private void WriteOSInfo()
+        private string WriteScreen()
         {
-            // OS Version Info
-            var os = Environment.OSVersion;
-            string BuildVersion = (string)Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue("ReleaseId");
-            ScreenWrite("OS: " + GetOsName());
-            ScreenWrite("OS Build: " + BuildVersion);
-            ScreenWrite("Service Pack: " + (os.ServicePack != "" ? os.ServicePack : "N/A"));
+            string ScreenData = "";
+            if (config["ShowUsername"] == "True") ScreenData += siig.GetUserInfo();
+            if(config["ShowHostname"] == "True") ScreenData += siig.GetHostname();
+            if (config["ShowOS"] == "True") ScreenData += siig.GetOSInfo();
+            if (config["ShowRAM"] == "True") ScreenData += siig.GetRAM();
+            if (config["DriveInfo"] != "None")
+            {
+                ScreenData += siig.GetDiskInfo(config["DriveInfo"] == "Verbose");
+            }
+            if (config["NetInfo"] != "None")
+            {
+                ScreenData += siig.GetNetworkInfo(config["NetInfo"] == "Verbose");
+            }
+            return ScreenData;
         }
 
-        // Make this display in the bottom right-hand corner
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Left = SystemParameters.WorkArea.Right - (this.Width + 5);
-            this.Top = SystemParameters.WorkArea.Bottom - (this.Height + 5);
-        }
 
         // Disable minimization
         // Will still minimize when "Show Desktop" is triggered, but will pop back up as soon as another Window is restored/launched.
@@ -140,6 +111,11 @@ namespace SysInfo
                 this.WindowState = WindowState.Normal;
             }
             
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ConfigAppearance();
         }
     }
 }

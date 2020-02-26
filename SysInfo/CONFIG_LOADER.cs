@@ -8,39 +8,57 @@ using System.Xml;
 
 namespace SysInfo
 {
-    class CONFIG_LOADER
+    public class CONFIG_LOADER
     {
         // Default configuration values
-        private Dictionary<string, string> DefaultConfig = new Dictionary<string, string>
+        private static Dictionary<string, string> DefaultConfig = new Dictionary<string, string>
         {
             { "TextColor","#fff" },
-            { "TextSize","12" },
-            { "TextFont","Consolas" },
-            { "Shadow","True" },
-            { "VerticalLocation","Bottom" },
-            { "HorizontalLocation","Right" }
-        };
-        public Dictionary<string, string> GetConf()
-        {
-            string ConfigFilePath = "sysinfo-settings.conf";
+            { "TextSize", "12" },
+            { "TextFont", "Consolas" },
+            { "VerticalLocation", "Top" },
+            { "HorizontalLocation", "Right" },
+            { "AlwaysOnTop", "False" },
+            { "ShowUsername", "True" },
+            { "ShowHostname", "True" },
+            { "ShowOS", "True" },
+            { "ShowRAM", "True" },
+            { "DriveInfo", "Verbose" },
+            { "NetInfo", "Compact" }
 
+        };
+        public static Dictionary<string, string> GetConf(string ConfigFilePath = "sysinfo-settings.conf")
+        {
+            // Use the default configuration, and modify it as settings are passed in
+            // This ensures the configuration is passed through, even if the configuration file is used as an override (partial)
+            Dictionary<string, string> ReturnDict = DefaultConfig;
             if (File.Exists(ConfigFilePath))
             {
-                Dictionary<string, string> ReturnDict = new Dictionary<string, string>();
                 using (StreamReader reader = new StreamReader(ConfigFilePath))
                 {
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         string[] splitLine = line.Split('=');
-                        ReturnDict.Add(splitLine[0], splitLine[1]);
+                        if((splitLine.Length == 2) && !line.StartsWith("#"))
+                        {
+                            if(ReturnDict.Keys.Contains(splitLine[0]))
+                            {
+                                ReturnDict[splitLine[0]] = splitLine[1];
+                            }
+                            else
+                            {
+                                ReturnDict.Add(splitLine[0], splitLine[1]);
+                            }
+                        }
                     }
                 }
                 return ReturnDict;
             }
             else
             {
-                // Use default configuration 
+                // Use default configuration
+                Console.WriteLine("Could not find " + ConfigFilePath);
                 return DefaultConfig;
             }
         }
