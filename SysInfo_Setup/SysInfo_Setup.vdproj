@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_041D6464B62C111FA9BD0C44D8CFF17E"
-        "OwnerKey" = "8:_2342D17A058B445C84D01A0DE9089E64"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_2342D17A058B445C84D01A0DE9089E64"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -29,6 +23,12 @@
         {
         "MsmKey" = "8:_A786B76F63244F749DFCDF4A74597508"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B681BE77BA7BFB16CA5CBB64E377D26F"
+        "OwnerKey" = "8:_2342D17A058B445C84D01A0DE9089E64"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -52,7 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_041D6464B62C111FA9BD0C44D8CFF17E"
+        "OwnerKey" = "8:_B681BE77BA7BFB16CA5CBB64E377D26F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -156,14 +156,34 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_041D6464B62C111FA9BD0C44D8CFF17E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A786B76F63244F749DFCDF4A74597508"
+            {
+            "SourcePath" = "8:..\\SysInfo\\sysinfo-settings.conf"
+            "TargetName" = "8:sysinfo-settings.conf"
+            "Tag" = "8:"
+            "Folder" = "8:_176C4A882A5945ACBA429467D11D953B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B681BE77BA7BFB16CA5CBB64E377D26F"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:SysInfo_Lib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_041D6464B62C111FA9BD0C44D8CFF17E"
+                    "_B681BE77BA7BFB16CA5CBB64E377D26F"
                     {
                     "Name" = "8:SysInfo_Lib.dll"
                     "Attributes" = "3:512"
@@ -185,26 +205,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A786B76F63244F749DFCDF4A74597508"
-            {
-            "SourcePath" = "8:..\\SysInfo\\sysinfo-settings.conf"
-            "TargetName" = "8:sysinfo-settings.conf"
-            "Tag" = "8:"
-            "Folder" = "8:_176C4A882A5945ACBA429467D11D953B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C7E5D28EC8DD2E1C0651E00DA2AA54ED"
@@ -325,15 +325,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SysInfo"
-        "ProductCode" = "8:{11E5CB8E-7A8B-4F9D-9514-D4C894F0A645}"
-        "PackageCode" = "8:{002F78FB-264F-438E-8881-868A291AC5C0}"
+        "ProductCode" = "8:{5AB38C13-07D2-4289-9CE1-8CF135821947}"
+        "PackageCode" = "8:{726017A3-3440-4CA2-87B5-D32FCC717054}"
         "UpgradeCode" = "8:{5B9E3603-A39C-4812-9DD9-96CEF7BE606A}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.1.0"
         "Manufacturer" = "8:Steven Nemeti"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

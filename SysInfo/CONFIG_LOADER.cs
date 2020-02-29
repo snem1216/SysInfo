@@ -23,8 +23,13 @@ namespace SysInfo
             { "ShowOS", "True" },
             { "ShowRAM", "True" },
             { "DriveInfo", "Verbose" },
-            { "NetInfo", "Compact" }
-        };
+            { "NetInfo", "Compact" },
+            { "RefreshInterval", "5" }
+        } ;
+        public static Dictionary<string, string> GetDefaultConfig()
+        {
+            return DefaultConfig;
+        }
         private static void WriteDefaultConfFile(string path)
         {
             string contents = "";

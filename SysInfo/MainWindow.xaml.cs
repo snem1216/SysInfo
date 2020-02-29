@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 using System.Management;
 using System.IO;
 using SysInfo_Lib;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace SysInfo
 {
@@ -32,10 +34,36 @@ namespace SysInfo
         {
             InitializeComponent();
             //ScreenWrite(Environment.WorkingSet.ToString());
-            tb.Text = WriteScreen();
+            if(config["RefreshInterval"] != "0")
+            {
+                int refreshRate;
+                try
+                {
+                    refreshRate = int.Parse(config["RefreshInterval"]);
+                }
+                catch
+                {
+                    refreshRate = int.Parse(CONFIG_LOADER.GetDefaultConfig()["RefreshInterval"]);
+                }
+                refreshRate *= 1000;
+                var task3 = new Task(() => IncRefresh(refreshRate),
+                    TaskCreationOptions.LongRunning);
+                task3.Start();
+                Console.WriteLine("RR: " + refreshRate.ToString());
+            }
+            WriteScreen(tb);
             ConfigAppearance();
         }
 
+        private void IncRefresh(int refreshRate)
+        {
+            while(true)
+            {
+                Thread.Sleep(refreshRate);
+                WriteScreen(tb);
+            }
+           
+        }
         // Apply aesthetic settings to the window
         private void ConfigAppearance()
         {
@@ -82,11 +110,13 @@ namespace SysInfo
             }
             
         }
-        private string WriteScreen()
+        private void WriteScreen(TextBlock target)
         {
             string ScreenData = "";
+            if (config["RefreshInterval"] != "0") ScreenData += "Stats Updated: \n\t" + DateTime.Now + "\n";
             if (config["ShowUsername"] == "True") ScreenData += siig.GetUserInfo();
             if(config["ShowHostname"] == "True") ScreenData += siig.GetHostname();
+            
             if (config["ShowOS"] == "True") ScreenData += siig.GetOSInfo();
             if (config["ShowRAM"] == "True") ScreenData += siig.GetRAM();
             if (config["DriveInfo"] != "None")
@@ -97,7 +127,10 @@ namespace SysInfo
             {
                 ScreenData += siig.GetNetworkInfo(config["NetInfo"] == "Verbose");
             }
-            return ScreenData;
+            this.Dispatcher.Invoke(() => {
+                target.Text = ScreenData;
+            });
+
         }
 
 

@@ -21,6 +21,7 @@ namespace SysInfo_Lib
         {
             return String.Format("{0:0.00}", (s / Math.Pow(1024, 3)));
         }
+
         private string MACFormat(string raw, char delimiter = ':')
         {
             string formatted = "";
@@ -74,7 +75,7 @@ namespace SysInfo_Lib
                         // Drive C (Windows) - Fixed
                         //  File System: NTFS
                         //  Free: 86.75 GB / 309.00 GB
-                        result += LineFormat("Drive " + drive.Name.Replace(":\\", "") + " " + (drive.VolumeLabel != "" ? "(" + drive.VolumeLabel + ")" : "") + " - " + drive.DriveType);
+                        result += LineFormat("Drive " + drive.Name.Replace(":\\", "") + (drive.VolumeLabel != "" ? " (" + drive.VolumeLabel + ")" : "") + " - " + drive.DriveType);
                         result += LineFormat("File System: " + drive.DriveFormat, 1);
                         result += LineFormat("Used: " + ToGB(drive.TotalSize - drive.TotalFreeSpace) + "/" + ToGB(drive.TotalSize) + " GB", 1);
                     }
