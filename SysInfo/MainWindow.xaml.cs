@@ -19,6 +19,7 @@ using System.IO;
 using SysInfo_Lib;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SysInfo
 {
@@ -32,6 +33,12 @@ namespace SysInfo
         //Dictionary<string, string> config
         public MainWindow()
         {
+            // Do not run multiple instances
+            if(System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
+            {
+                this.Close();
+            }
+
             InitializeComponent();
             //ScreenWrite(Environment.WorkingSet.ToString());
             if(config["RefreshInterval"] != "0")
@@ -46,10 +53,9 @@ namespace SysInfo
                     refreshRate = int.Parse(CONFIG_LOADER.GetDefaultConfig()["RefreshInterval"]);
                 }
                 refreshRate *= 1000;
-                var task3 = new Task(() => IncRefresh(refreshRate),
+                var Refresh = new Task(() => IncRefresh(refreshRate),
                     TaskCreationOptions.LongRunning);
-                task3.Start();
-                Console.WriteLine("RR: " + refreshRate.ToString());
+                Refresh.Start();
             }
             WriteScreen(tb);
             ConfigAppearance();
